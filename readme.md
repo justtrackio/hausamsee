@@ -1,11 +1,34 @@
+# Haus am See
 
+This project is a demonstration of a data lakehouse architecture using Apache Iceberg, Apache Spark, Apache Flink, Trino, Nessie, and MinIO.  
+It showcases how to ingest, process, and query data in a version-controlled environment.  
+The example data used is a stream of user clicks.
 
-# Start docker compose environment
+## Project Structure
+- `docker`: Contains the docker-compose files for the services.
+- `flink-readwrite`: A Flink application to ingest data from Kafka into Iceberg and read data from Iceberg.
+- `go-reader`: Go applications to read data from the lake house.
+  - `arrow`: Reads data directly from Iceberg using the Iceberg Go library and Apache Arrow.
+  - `trino`: Reads data from Trino using its sql driver.
+- `prepare`: A Go application to generate sample data and send it to Kafka.
+
+## Docker Services
+- `catalog`: Nessie service, providing a transactional catalog for the data lake.
+- `catalog_postgres`: PostgreSQL database for the Nessie catalog.
+- `redpanda`: Kafka-compatible event streaming platform.
+- `redpanda-console`: Web-based UI for Redpanda.
+- `storage`: MinIO service, providing S3-compatible object storage.
+- `storage_createbucket`: A one-off service to create the `warehouse` bucket in MinIO.
+- `trino`: Trino service, a distributed SQL query engine.
+- `spark-master`: Spark master node.
+- `spark-worker`: Spark worker node.
+
+## Start docker compose environment
 ```bash
 docker compose up -d
 ```
 
-# Endpoints
+## Endpoints
 - Trino: http://localhost:8010 
   - just use any username for login
 - Nessie: http://localhost:19120
@@ -15,14 +38,14 @@ docker compose up -d
 - Spark Master: http://localhost:8080
 - Spark History: http://localhost:18080
 
-# Prepare data
+## Prepare data
 Run the golang application in the `prepare` directory to generate a bunch of click events in the redpanda cluster.
 ```bash
 cd prepare
 go run main.go
 ```
 
-# Spark
+## Spark
 ### log in to the master node
 ```bash
 docker exec -it hausamsee_spark_master /bin/bash
@@ -47,7 +70,35 @@ docker exec -it hausamsee_spark_master spark-sql \
 --conf spark.sql.catalog.hausamsee.warehouse=s3://warehouse
 ```
 
-# Nessie GC
+## Connecting to Trino via JDBC
+You can connect to the Trino instance via JDBC using the following connection string:
+```
+jdbc:trino://localhost:8010
+```
+You can use any username and no password to connect.
+
+Here is a Java code example of how to connect to Trino and execute a query:
+```java
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class TrinoJdbcExample {
+    public static void main(String[] args) throws Exception {
+        String url = "jdbc:trino://localhost:8010/hausamsee/main";
+        try (Connection connection = DriverManager.getConnection(url, "user", null);
+             Statement statement = connection.createStatement();
+             ResultSet rs = statement.executeQuery("SELECT * FROM clicks LIMIT 10")) {
+            while (rs.next()) {
+                // process result set
+            }
+        }
+    }
+}
+```
+
+## Nessie GC
 ```bash
 java -jar nessie-gc-0.104.2.jar create-sql-schema \
 --jdbc \
