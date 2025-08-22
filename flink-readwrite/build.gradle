@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+}
+
+group = 'io.justtrack'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url = "https://packages.confluent.io/maven"
+    }
+}
+
+ext {
+    flinkShortVersion = "1.19"
+    flinkVersion = "1.19.1"
+    hadoopVersion = "3.3.4"
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.13.1'
+    implementation "org.apache.flink:flink-avro:${flinkVersion}"
+    implementation "org.apache.flink:flink-clients:${flinkVersion}"
+    implementation "org.apache.flink:flink-connector-base:${flinkVersion}"
+    implementation "org.apache.flink:flink-connector-kafka:3.3.0-${flinkShortVersion}"
+    implementation "org.apache.flink:flink-json:${flinkVersion}"
+    implementation "org.apache.flink:flink-runtime-web:${flinkVersion}"
+    implementation("org.apache.flink:flink-table-api-java:${flinkVersion}")
+    implementation("org.apache.flink:flink-table-planner_2.12:${flinkVersion}")
+    implementation "org.apache.hadoop:hadoop-common:${hadoopVersion}"
+    implementation("org.apache.hadoop:hadoop-hdfs-client:${hadoopVersion}")
+    implementation("org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}")
+    implementation("org.apache.iceberg:iceberg-aws-bundle:1.9.1")
+    implementation("org.apache.iceberg:iceberg-flink-runtime-1.19:1.9.1")
+    implementation "org.slf4j:slf4j-simple:2.0.13"
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}

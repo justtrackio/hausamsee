@@ -1,0 +1,4 @@
+.gradle
+.idea
+build
+src/main/avro/avro-tools-1.11.1.jar

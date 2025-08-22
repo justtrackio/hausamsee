@@ -1,0 +1,6 @@
+env: dev
+
+app_project: justtrack
+app_family: hausamsee
+app_group: prepare
+app_name: ingest

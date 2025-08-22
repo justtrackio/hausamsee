@@ -1,0 +1,43 @@
+{
+  "name": "Click",
+  "namespace": "io.justtrack.hausamsee",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "storeId",
+      "type": "string"
+    },
+    {
+      "name": "campaignId",
+      "type": "int"
+    },
+    {
+      "name": "geo",
+      "type": {
+        "type": "record",
+        "name": "Geo",
+        "fields": [
+          {
+            "name": "city",
+            "type": "string"
+          },
+          {
+            "name": "countryCode",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "createdAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    }
+  ]
+}
